@@ -23,7 +23,7 @@
  * Used to size stack-allocated arrays for grant management; the
  * max_overcommit sysctl parameter cannot be greater than this.
  */
-#define MAX_GRANTS 10
+#define MAX_GRANTS 112
 
 /**
  * homa_message_in_init() - Constructor for homa_message_in.
@@ -583,10 +583,12 @@ void homa_data_pkt(struct sk_buff *skb, struct homa_rpc *rpc,
 	}
 
 	if (rpc->msgin.scheduled ) {
-		if (lcache != NULL)
+		if (lcache != NULL){
 			homa_lcache_check_grantable(lcache);
-		else
+		}
+		else{
 			homa_check_grantable(rpc);
+		}
 	}
 
 	if (ntohs(h->cutoff_version) != homa->cutoff_version) {
@@ -1209,7 +1211,12 @@ int homa_create_grants(struct homa *homa, struct homa_rpc **rpcs,
 		tt_record4("sending grant for id %llu, offset %d, priority %d, "
 				"increment %d",
 				rpc->id, new_grant, priority, increment);
+<<<<<<< Updated upstream
 		if (new_grant == rpc->msgin.length)
+=======
+		//dump_stack();
+		if (new_grant == rpc->msgin.total_length)
+>>>>>>> Stashed changes
 			homa_remove_grantable_locked(homa, rpc);
 		rpcs[num_grants] = rpc;
 		num_grants++;

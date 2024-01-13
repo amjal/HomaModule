@@ -20,7 +20,7 @@
 
 // Change 1 -> 0 in the following line to disable time tracing globally.
 // Used only in debugging.
-#define ENABLE_TIME_TRACE 1
+#define ENABLE_TIME_TRACE 0
 
 /**
  * Timetrace implements a circular buffer of entries, each of which
@@ -57,7 +57,7 @@ struct tt_event {
 };
 
 /* The number of events in a tt_buffer, as a power of 2. */
-#define TT_BUF_SIZE_EXP 14
+#define TT_BUF_SIZE_EXP 18
 #define TT_BUF_SIZE (1<<TT_BUF_SIZE_EXP)
 
 /**

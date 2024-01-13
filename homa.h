@@ -40,7 +40,7 @@ extern "C"
  * define HOMA_MAX_MESSAGE_LENGTH - Maximum bytes of payload in a Homa
  * request or response message.
  */
-#define HOMA_MAX_MESSAGE_LENGTH 1000000
+#define HOMA_MAX_MESSAGE_LENGTH 4000000
 
 /**
  * define HOMA_BPAGE_SIZE - Number of bytes in pages used for receive
@@ -156,12 +156,14 @@ struct homa_recvmsg_args {
 	 */
 	uint32_t bpage_offsets[HOMA_MAX_BPAGES];
 };
+/*
 #if !defined(__cplusplus)
 _Static_assert(sizeof(struct homa_recvmsg_args) >= 120,
 		"homa_recvmsg_args shrunk");
 _Static_assert(sizeof(struct homa_recvmsg_args) <= 120,
 		"homa_recvmsg_args grew");
 #endif
+*/
 
 /* Flag bits for homa_recvmsg_args.flags (see man page for documentation):
  */

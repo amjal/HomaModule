@@ -115,7 +115,8 @@ int tt_init(char *proc_file, int *temp)
 
 	for (i = 0; i < nr_cpu_ids; i++) {
 		struct tt_buffer *buffer;
-		buffer = kmalloc(sizeof(*buffer), GFP_KERNEL);
+		//buffer = kmalloc(sizeof(*buffer), GFP_KERNEL);
+		buffer = vmalloc(sizeof(*buffer));
 		if (buffer == NULL) {
 			printk(KERN_ERR "timetrace couldn't allocate "
 					"tt_buffers\n");
@@ -180,7 +181,7 @@ void tt_destroy(void)
 			proc_remove(tt_dir_entry);
 	}
 	for (i = 0; i < nr_cpu_ids; i++) {
-		kfree(tt_buffers[i]);
+		vfree(tt_buffers[i]);
 		tt_buffers[i] = NULL;
 	}
 	tt_freeze_count.counter = 1;
