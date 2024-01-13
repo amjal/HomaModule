@@ -467,7 +467,7 @@ void __homa_xmit_data(struct sk_buff *skb, struct homa_rpc *rpc, int priority)
 	struct data_header *h = (struct data_header *)
 			skb_transport_header(skb);
 	struct dst_entry *dst;
-
+	struct inet_sock* intsk;
 	/* Update info that may have changed since the message was initially
 	 * created.
 	 */
@@ -495,9 +495,15 @@ void __homa_xmit_data(struct sk_buff *skb, struct homa_rpc *rpc, int priority)
 				"id %d, offset %d",
 				homa_get_skb_info(skb)->wire_bytes,
 				tt_addr(rpc->peer->addr), rpc->id,
-				htonl(h->seg.offset));
+				ntohl(h->seg.offset));
 
 		rpc->hsk->inet.tos = rpc->hsk->homa->priority_map[priority]<<5;
+		// IP header manipulation
+		if(ntohl(h->seg.offset) < rpc->msgout.unscheduled){
+			intsk = inet_sk(&rpc->hsk->inet.sk);
+			intsk ->tos |= 0x01;
+		}
+		// End manipulation
 		err = ip_queue_xmit(&rpc->hsk->inet.sk, skb, &rpc->peer->flow);
 	}
 	tt_record4("Finished queueing packet: rpc id %llu, offset %d, len %d, "
