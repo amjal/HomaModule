@@ -1345,7 +1345,7 @@ void homa_append_metric(struct homa *homa, const char* format, ...)
 #else
 		homa->metrics_capacity =  4096;
 #endif
-		homa->metrics =  kmalloc(homa->metrics_capacity, GFP_KERNEL);
+		homa->metrics =  vmalloc(homa->metrics_capacity, GFP_KERNEL);
 		if (!homa->metrics) {
 			printk(KERN_WARNING "homa_append_metric couldn't "
 				"allocate memory\n");
@@ -1369,14 +1369,14 @@ void homa_append_metric(struct homa *homa, const char* format, ...)
 
 		/* Not enough room; expand buffer capacity. */
 		homa->metrics_capacity *= 2;
-		new_buffer = kmalloc(homa->metrics_capacity, GFP_KERNEL);
+		new_buffer = vmalloc(homa->metrics_capacity, GFP_KERNEL);
 		if (!new_buffer) {
 			printk(KERN_WARNING "homa_append_metric couldn't "
 				"allocate memory\n");
 			return;
 		}
 		memcpy(new_buffer, homa->metrics, homa->metrics_length);
-		kfree(homa->metrics);
+		vfree(homa->metrics);
 		homa->metrics = new_buffer;
 	}
 	homa->metrics_length += new_chars;
