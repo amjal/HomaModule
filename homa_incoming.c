@@ -1211,12 +1211,7 @@ int homa_create_grants(struct homa *homa, struct homa_rpc **rpcs,
 		tt_record4("sending grant for id %llu, offset %d, priority %d, "
 				"increment %d",
 				rpc->id, new_grant, priority, increment);
-<<<<<<< Updated upstream
 		if (new_grant == rpc->msgin.length)
-=======
-		//dump_stack();
-		if (new_grant == rpc->msgin.total_length)
->>>>>>> Stashed changes
 			homa_remove_grantable_locked(homa, rpc);
 		rpcs[num_grants] = rpc;
 		num_grants++;
