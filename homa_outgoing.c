@@ -122,7 +122,8 @@ int homa_message_out_init(struct homa_rpc *rpc, struct iov_iter *iter, int xmit)
 	 */
 	gso_type = (rpc->hsk->homa->gso_force_software) ? 0xd : SKB_GSO_TCPV6;
 
-	overlap_xmit = rpc->msgout.length > 2*rpc->msgout.gso_pkt_data;
+	//overlap_xmit = rpc->msgout.length > 2*rpc->msgout.gso_pkt_data;
+	overlap_xmit = false;
 	rpc->msgout.granted = rpc->msgout.unscheduled;
 	atomic_or(RPC_COPYING_FROM_USER, &rpc->flags);
 
@@ -514,6 +515,7 @@ void __homa_xmit_data(struct sk_buff *skb, struct homa_rpc *rpc, int priority)
 	if (err) {
 		INC_METRIC(data_xmit_errors, 1);
 	}
+	printk(KERN_DEBUG "*** Sent packet\n");
 	INC_METRIC(packets_sent[0], 1);
 	INC_METRIC(priority_bytes[priority], skb->len);
 	INC_METRIC(priority_packets[priority], 1);
@@ -679,6 +681,9 @@ int homa_check_nic_queue(struct homa *homa, struct sk_buff *skb, bool force)
 
 	bytes = homa_get_skb_info(skb)->wire_bytes;
 	cycles_for_packet = (bytes * homa->cycles_per_kbyte)/1000;
+	__u64 start = get_cycles();
+	/* wait */
+	while ((get_cycles() - start) < cycles_for_packet);
 	while (1) {
 		clock = get_cycles();
 		idle = atomic64_read(&homa->link_idle_time);
@@ -731,12 +736,14 @@ int homa_pacer_main(void *transportInfo)
 		 * softirq handlers can get locked out, which prevents
 		 * incoming packets from being handled).
 		 */
+		/*
 		set_current_state(TASK_INTERRUPTIBLE);
 		if (list_first_or_null_rcu(&homa->throttled_rpcs,
 				struct homa_rpc, throttled_links) == NULL)
 			tt_record("pacer sleeping");
 		else
 			__set_current_state(TASK_RUNNING);
+		*/
 		INC_METRIC(pacer_cycles, get_cycles() - homa->pacer_wake_time);
 		homa->pacer_wake_time = 0;
 		schedule();
@@ -833,7 +840,6 @@ void homa_pacer_xmit(struct homa *homa)
 			break;
 		}
 		homa_throttle_unlock(homa);
-
 		tt_record4("pacer calling homa_xmit_data for rpc id %llu, "
 				"port %d, offset %d, bytes_left %d",
 				rpc->id, rpc->hsk->port,
