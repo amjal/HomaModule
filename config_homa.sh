@@ -1,12 +1,12 @@
 #!/bin/bash
 
-NR_HOSTS=14
+NR_HOSTS=4
 
 # Default value is 25000
 sysctl .net.homa.link_mbps=100
 
 # Default value is 50 us
-sysctl .net.homa.poll_usecs=5
+sysctl .net.homa.poll_usecs=150
 
 # Default value is 8
 sysctl .net.homa.max_overcommit=$(( $NR_HOSTS * 8 ))
@@ -15,14 +15,8 @@ sysctl .net.homa.max_overcommit=$(( $NR_HOSTS * 8 ))
 # Default is 400000
 sysctl .net.homa.max_incoming=$(( $NR_HOSTS * 400000 ))
 
-# Default is 50/1000
-sysctl .net.homa.grant_fifo_fraction=50
-
-# Default is 50/1000
-sysctl .net.homa.pacer_fifo_fraction=50
-
 # Default is 5
-sysctl .net.homa.timeout_resends=100
+sysctl .net.homa.timeout_resends=50
 
 # Default is 10000, modified to get more and smaller packets
 # this way we can keep the retransmission timeout lower as 
@@ -30,10 +24,10 @@ sysctl .net.homa.timeout_resends=100
 sysctl .net.homa.max_gso_size=1500
 
 # Default is 15
-sysctl .net.homa.resend_ticks=500
+sysctl .net.homa.resend_ticks=50
 
 # Default is 10 
-sysctl .net.homa.resend_interval=250
+sysctl .net.homa.resend_interval=50
 
 
 # Default is 10000
@@ -42,10 +36,11 @@ sysctl .net.homa.unsched_bytes=33000
 # Default is 10000
 sysctl .net.homa.window=33000
 
-#sysctl .net.homa.verbose=10
+# Default is 0
+sysctl .net.homa.flags=2
 
 echo "Remember to set high priority for Homa kernel module using:
-		chrt -p 99 [PID]"
+		chrt -p 49 [PID]"
 
 
 # The way the two parameters resend_ticks and resend_interval cooperate is 
