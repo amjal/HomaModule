@@ -102,6 +102,10 @@ int homa_message_out_init(struct homa_rpc *rpc, struct iov_iter *iter, int xmit)
 	max_pkt_data = mtu - rpc->hsk->ip_header_length
 			- sizeof(struct data_header);
 	gso_size = dst->dev->gso_max_size;
+	/* DEBUGGING */
+	struct net_device * d = dst->dev;
+	printk(KERN_DEBUG "device name %s", d->name);
+	/* END DEBUGGING */
 	if (gso_size > rpc->hsk->homa->max_gso_size)
 		gso_size = rpc->hsk->homa->max_gso_size;
 
@@ -515,7 +519,6 @@ void __homa_xmit_data(struct sk_buff *skb, struct homa_rpc *rpc, int priority)
 	if (err) {
 		INC_METRIC(data_xmit_errors, 1);
 	}
-	printk(KERN_DEBUG "*** Sent packet\n");
 	INC_METRIC(packets_sent[0], 1);
 	INC_METRIC(priority_bytes[priority], skb->len);
 	INC_METRIC(priority_packets[priority], 1);
@@ -736,14 +739,12 @@ int homa_pacer_main(void *transportInfo)
 		 * softirq handlers can get locked out, which prevents
 		 * incoming packets from being handled).
 		 */
-		/*
 		set_current_state(TASK_INTERRUPTIBLE);
 		if (list_first_or_null_rcu(&homa->throttled_rpcs,
 				struct homa_rpc, throttled_links) == NULL)
 			tt_record("pacer sleeping");
 		else
 			__set_current_state(TASK_RUNNING);
-		*/
 		INC_METRIC(pacer_cycles, get_cycles() - homa->pacer_wake_time);
 		homa->pacer_wake_time = 0;
 		schedule();
