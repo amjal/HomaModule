@@ -1457,6 +1457,7 @@ void tcp_server::accept(int epoll_fd)
 	 * we trust (as of August 2023, at CloudLab, external sites
 	 * could open connections).
 	 */
+	/*
 	if (client_addr.in4.sin_family == AF_INET) {
 		uint8_t *ipaddr = (uint8_t *) &client_addr.in4.sin_addr;
 		if ((ipaddr[0] != 10) || (ipaddr[1] != 0) || (ipaddr[2] != 1)) {
@@ -1467,6 +1468,7 @@ void tcp_server::accept(int epoll_fd)
 			return;
 		}
 	}
+	*/
 	log(NORMAL, "tcp_server on port %d accepted connection from %s, fd %d\n",
 			port, print_address(&client_addr), fd);
 	int flag = 1;
