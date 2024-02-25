@@ -685,7 +685,9 @@ int homa_check_nic_queue(struct homa *homa, struct sk_buff *skb, bool force)
 	bytes = homa_get_skb_info(skb)->wire_bytes;
 	cycles_for_packet = (bytes * homa->cycles_per_kbyte)/1000;
 	__u64 start = get_cycles();
-	/* wait */
+	/* This wait is added as an interim mechanism to fill in for the throttle queue's queue latency control
+	 * In the standard implementaion, this would be done by the throttle queue itself. Right now, the throttle queue 
+	 * has issues and I have disabled it.*/
 	while ((get_cycles() - start) < cycles_for_packet);
 	while (1) {
 		clock = get_cycles();

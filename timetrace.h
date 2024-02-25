@@ -57,7 +57,7 @@ struct tt_event {
 };
 
 /* The number of events in a tt_buffer, as a power of 2. */
-#define TT_BUF_SIZE_EXP 18
+#define TT_BUF_SIZE_EXP 14
 #define TT_BUF_SIZE (1<<TT_BUF_SIZE_EXP)
 
 /**

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NR_HOSTS=4
+NR_HOSTS=2
 
 # Default value is 25000
 sysctl .net.homa.link_mbps=100
