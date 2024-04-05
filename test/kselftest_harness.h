@@ -822,8 +822,8 @@ void __run_test(struct __test_metadata *t)
  * @verbose: Nonzero means print all test names as they run; zero means print
  *           only for test failures.
  */
-static int test_harness_run(int __attribute__((unused)) argc,
-			    char __attribute__((unused)) **argv,
+static int test_harness_run(int argc,
+			    char **argv,
 			    int verbose)
 {
 	struct __test_metadata *t;
