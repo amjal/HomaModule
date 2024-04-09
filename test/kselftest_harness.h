@@ -264,6 +264,29 @@ extern int strcmp(const char *s1, const char *s2);
 		FIXTURE_DATA(fixture_name) __attribute__((unused)) *self)
 
 /**
+ * BENCH_F(fixture_name, bench_name) - Emits benchmark function
+ * @fixture_name: fixture name
+ * @bench_name: benchmark name
+ * 
+ */
+#define BENCH_F(fixture_name, bench_name) \
+	void bench_##fixture_name##_##bench_name( \
+		struct __test_metadata *_metadata, \
+		FIXTURE_DATA(fixture_name) *self); \
+	FIXTURE_DATA(fixture_name) self_##fixture_name##_##bench_name; \
+	void bench_setup##_##fixture_name##_##bench_name( \
+		FIXTURE_DATA(fixture_name) *self) \
+	{ \
+		/* fixture data is alloced, setup, and torn down per call. */ \
+		memset(self, 0, sizeof(FIXTURE_DATA(fixture_name))); \
+		/* _metadata used without allocation because it is unused within setup*/ \
+		fixture_name##_setup(NULL, self); \
+	} \
+	void bench_##fixture_name##_##bench_name( \
+		struct __test_metadata __attribute__((unused)) *_metadata, \
+		FIXTURE_DATA(fixture_name) __attribute__((unused)) *self)
+
+/**
  * TEST_F(fixture_name, test_name) - Emits test registration and helpers for
  * fixture-based test cases
  *
@@ -822,9 +845,7 @@ void __run_test(struct __test_metadata *t)
  * @verbose: Nonzero means print all test names as they run; zero means print
  *           only for test failures.
  */
-static int test_harness_run(int argc,
-			    char **argv,
-			    int verbose)
+static int test_harness_run(int argc, char **argv, int verbose)
 {
 	struct __test_metadata *t;
 	int ret = 0;

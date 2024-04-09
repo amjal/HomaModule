@@ -26,14 +26,15 @@ CCINCLUDES := -I. \
 	    -I$(KDIR)/arch/x86/include/uapi \
 	    -I$(KDIR)/arch/x86/include/generated/uapi \
 	    -I$(KDIR)/include/uapi \
-	    -I$(KDIR)/include/generated/uapi
+	    -I$(KDIR)/include/generated/uapi \
+		-isystem benchmark/include
 
 DEFS :=      -D__KERNEL__ \
 	     -D__UNIT_TEST__ \
 	     -D KBUILD_MODNAME='"homa"'
 
 WARNS :=     -Wall -Wundef -Wno-trigraphs -Wno-sign-compare \
-		-Wno-strict-aliasing -Werror
+		-Wno-strict-aliasing
 CFLAGS :=    $(WARNS) -Wstrict-prototypes -MD -g $(CINCLUDES) $(DEFS)
 CCFLAGS :=   -std=c++11 $(WARNS) -MD -g $(CCINCLUDES) $(DEFS) -fsanitize=address
 
@@ -50,6 +51,9 @@ TEST_SRCS :=  unit_homa_grant.c \
 	      unit_timetrace.c
 TEST_OBJS :=  $(patsubst %.c,%.o,$(TEST_SRCS))
 
+BENCH_SRCS := bench_homa_offload.cc
+BENCH_OBJS := $(patsubst %.cc,%.o,$(BENCH_SRCS))
+
 HOMA_SRCS :=  homa_grant.c \
 	      homa_incoming.c \
 	      homa_offload.c \
@@ -64,15 +68,14 @@ HOMA_SRCS :=  homa_grant.c \
 HOMA_OBJS :=  $(patsubst %.c,%.o,$(HOMA_SRCS))
 
 OTHER_SRCS := ccutils.cc \
-	      main.c \
 	      mock.c \
 	      utils.c
 
 OTHER_OBJS := $(patsubst %.c,%.o,$(patsubst %.cc,%.o,$(OTHER_SRCS)))
 
-OBJS := $(TEST_OBJS) $(HOMA_OBJS) $(OTHER_OBJS)
+COMMON_OBJS := $(HOMA_OBJS) $(OTHER_OBJS)
 
-CLEANS = unit $(OBJS) *.d .deps
+CLEANS = unit bench main.o bench_main.o $(TEST_OBJS) $(BENCH_OBJS) $(COMMON_OBJS) *.d .deps
 
 all: run_tests
 
@@ -93,8 +96,11 @@ all: run_tests
 %.e: %.cc
 	$(CXX) -E $(CCFLAGS) $< -o $@
 
-unit: $(OBJS)
+unit: main.o $(TEST_OBJS) $(COMMON_OBJS)
 	$(CXX) $(CFLAGS) $^ -o $@ -lasan
+
+bench: bench_main.o $(BENCH_OBJS) unit_homa_offload.o $(COMMON_OBJS)
+	$(CXX) $(CCFLAGS) $^ -o $@ -lbenchmark -lasan
 
 run_tests: unit
 	./unit

@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
 		} else if (argv[i][0] == '-') {
 			printf("Unknown option %s; type '%s --help' for help\n",
 				argv[i], argv[0]);
-			return 1;
+			return 1;	
 		} else {
 			break;
 		}

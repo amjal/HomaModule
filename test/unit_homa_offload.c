@@ -96,6 +96,17 @@ TEST_F(homa_offload, homa_gso_segment_set_ip_ids)
 	kfree_skb(segs);
 }
 
+BENCH_F(homa_offload, homa_gso_segment)
+{
+    mock_ipv6 = false;
+    struct sk_buff *skb = mock_skb_new(&self->ip, &self->header.common,
+     1400, 2000);
+    struct sk_buff *segs = homa_gso_segment(skb, 0);
+	kfree_skb(skb);
+	kfree_skb(segs->next);
+	kfree_skb(segs);
+}
+
 TEST_F(homa_offload, homa_gro_receive__HOMA_GRO_SHORT_BYPASS)
 {
 	struct in6_addr client_ip = unit_get_in_addr("196.168.0.1");
