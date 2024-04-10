@@ -15,6 +15,17 @@ This repo contains an implementation of the Homa transport protocol as a Linux k
 From notes.txt, the aim of this branch is to:
 >Improve software GSO by making segments refer to the initial large buffer instead of copying. 
 
-So far, to be able to benchmark and profile the `homa_gso_segment` function, I have created C benchmark 
+To be able to benchmark and profile the `homa_gso_segment` function, I have created C benchmark 
 units in the _tests_ directory and linked them with a C++ code that registers and benchmarks those units 
 using [Google's Benchmark library](https://github.com/google/benchmark).
+
+The `homa_gso_segment` function is the `gso_segment` handler for Homa registered as a callback through this code in homa_offload.c: 
+```
+static const struct net_offload homa_offload = {
+	.callbacks = {
+		.gso_segment	=	homa_gso_segment,
+		.gro_receive	=	homa_gro_receive,
+		.gro_complete	=	homa_gro_complete,
+	},
+};
+```
