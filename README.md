@@ -24,5 +24,4 @@ many NICs are on a host.
 
 Because of the mentioned single-NIC perception by the module, an issue arises when one NIC has a tx queue backlog that exceeds the `.net.homa.max_nic_queue_ns`
 parameter; then no more packets are added to any other virtual queues until that one queue is cleared. This wastes bandwidth with
-the virtual interfaces that are sharing the pacer thread.  
-This issue currently exists and has not yet been addressed.
+the virtual interfaces that are sharing the pacer thread. This [issue](https://github.com/PlatformLab/HomaModule/issues/53) currently exists and has not yet been addressed. 
