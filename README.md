@@ -17,7 +17,22 @@ From notes.txt, the aim of this branch is to:
 
 To be able to benchmark and profile the `homa_gso_segment` function, I have created C benchmark 
 units in the _tests_ directory and linked them with a C++ code that registers and benchmarks those units 
-using [Google's Benchmark library](https://github.com/google/benchmark).
+using [Google's Benchmark library](https://github.com/google/benchmark). That way, we can write custom units and benchmark them and profile the benchmarks.
+
+Alternatively, we can profile the `homa_gso_segment` function using `perf probe`. First, we have to add a probe event:
+```
+./linux-6.1.38/tools/perf/perf probe -v -x ./HomaModule/homa.ko --add="homa_gso_segment"
+```
+
+Then we can record it on a running Homa module this way: 
+```
+sudo ./linux-6.1.38/tools/perf/perf record -e probe_homa:homa_gso_segment -a -g
+```
+
+Which will be reported this way: 
+```
+sudo ./linux-6.1.38/tools/perf/perf report -g "graph,0.5,caller"
+```
 
 The `homa_gso_segment` function is the `gso_segment` handler for Homa registered as a callback through this code in homa_offload.c: 
 ```
