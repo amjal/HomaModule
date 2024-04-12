@@ -15,23 +15,23 @@ This repo contains an implementation of the Homa transport protocol as a Linux k
 From notes.txt, the aim of this branch is to:
 >Improve software GSO by making segments refer to the initial large buffer instead of copying. 
 
-To be able to benchmark and profile the `homa_gso_segment` function, I have created C benchmark 
+To be able to benchmark and profile the `homa_gso_segment` function, I have created C micro-benchmark 
 units in the _tests_ directory and linked them with a C++ code that registers and benchmarks those units 
-using [Google's Benchmark library](https://github.com/google/benchmark). That way, we can write custom units and benchmark them and profile the benchmarks.
+using [Google's Benchmark library](https://github.com/google/benchmark). That way, we can write custom units and benchmark them, then profile the benchmarks.
 
-Alternatively, we can profile the `homa_gso_segment` function using `perf probe`. First, we have to add a probe event:
+We can also profile the `homa_gso_segment` function on the fly using dynamic tracepints. First, we have to add a probe event:
 ```
-./linux-6.1.38/tools/perf/perf probe -v -x ./HomaModule/homa.ko --add="homa_gso_segment"
-```
-
-Then we can record it on a running Homa module this way: 
-```
-sudo ./linux-6.1.38/tools/perf/perf record -e probe_homa:homa_gso_segment -a -g
+perf probe -v -m ./HomaModule/homa.ko --add="homa_gso_segment"
 ```
 
-Which will be reported this way: 
+Then we can record while some transmission is occuring:
 ```
-sudo ./linux-6.1.38/tools/perf/perf report -g "graph,0.5,caller"
+perf record -e probe:homa_gso_segment -a -g
+```
+
+To generate the report (you may or may not need to specify the path the _kallsyms_ files): 
+```
+perf report -g "graph,0.5,caller" --kallsyms=/proc/kallsyms
 ```
 
 The `homa_gso_segment` function is the `gso_segment` handler for Homa registered as a callback through this code in homa_offload.c: 
