@@ -44,3 +44,6 @@ static const struct net_offload homa_offload = {
 	},
 };
 ```
+Useful resources for me to get familiar with Linux kernel profiling:
+- https://alex.dzyoba.com/blog/kernel-profiling/
+- https://jvns.ca
