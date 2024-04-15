@@ -68,6 +68,15 @@ To generate a report and inspect it(you may or may not need to specify the path 
 perf report -g "graph,0.5,caller" --kallsyms=/proc/kallsyms
 ```
 
+If you need instruction-level traces of the methods themselves, you need to do some kind of filtering on `perf-record`.
+If your CPU support address filtering:
+```
+perf record -e cycles  --filter filter homa_gso_segment -a -g
+```
+If your CPU does not support address filtering or the command above is not useful, then you might have to write a BPF 
+program to achieve your needs. Please refer to [this](https://www.spinics.net/lists/linux-perf-users/msg22026.html) 
+email list.
+
 Useful resources for the perf tool (besides the man pages of course):
 - https://alex.dzyoba.com/blog/kernel-profiling/
 - https://jvns.ca
