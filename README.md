@@ -15,6 +15,6 @@ This repo is a fork. The original repo contains an implementation of the Homa tr
 Keeping track of the work I've done on Homa:
 - **multi-link:** Modifies Homa so we can run experiments on a Mininet setup without the pacer hindering host throughput. 
 - **immediate-resend:** Modifies the server so it immediately issues RESENDs in cases the clients request RESENDs for incomplete incoming messages. 
-- **gso:** Primarily concerned with enhancing the performance of Homa's gso mechanism. Incorporates [Google's Benchmark tool](https://github.com/google/benchmark) into Homa's unit test functions for benchmarking.
+- **micro-benchmark:** Incorporates [Google's Benchmark tool](https://github.com/google/benchmark) into Homa's unit test functions for fine-grained benchmarking of the module in user space.
 
 For more information refer to the README.md on each branch. 
